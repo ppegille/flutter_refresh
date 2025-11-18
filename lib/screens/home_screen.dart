@@ -4,10 +4,27 @@ import 'package:webtoon/services/api_service.dart';
 
 import '../widgets/webtoon_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
-  final Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToon();
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<WebtoonModel>> webtoons;
+
+  @override
+  void initState() {
+    super.initState();
+    webtoons = ApiService.getTodaysToon();
+  }
+
+  Future<void> _refreshWebtoons() async {
+    setState(() {
+      webtoons = ApiService.getTodaysToon();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +60,7 @@ class HomeScreen extends StatelessWidget {
 
   RefreshIndicator makeList(AsyncSnapshot<List<WebtoonModel>> snapshot) {
     return RefreshIndicator(
-      onRefresh: () async {},
+      onRefresh: _refreshWebtoons,
       child: ListView.separated(
         scrollDirection: Axis.vertical,
         padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
